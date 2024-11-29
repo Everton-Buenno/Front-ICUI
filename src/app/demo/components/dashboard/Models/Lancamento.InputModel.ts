@@ -5,4 +5,5 @@ export interface LancamentoInputModel{
     DataLancamento:Date
     TipoOperacao:number
     UsuarioId:string
+    DizimistaId?:string
 }

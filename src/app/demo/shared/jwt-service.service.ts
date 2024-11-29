@@ -44,6 +44,6 @@ export class JwtService {
   // Método para obter o IgrejaId do token
   getIgrejaId(token: string): string | null {
     const decodedToken = this.decodeToken(token);
-    return decodedToken ? decodedToken['igrejaId'] : null;  // Ajustado para 'igrejaId'
+    return decodedToken ? decodedToken['igrejaId'] : null;  
   }
 }

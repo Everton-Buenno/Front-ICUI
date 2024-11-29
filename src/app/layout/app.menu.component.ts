@@ -40,6 +40,7 @@ setTimeout(() => {
                 { label: 'Lançamentos', icon: 'pi pi-fw pi-home', routerLink: ['/'], disabled: false },
                 { label: 'Usuarios', icon: 'pi pi-fw pi-user', routerLink: ['/usuarios'], disabled: this.userPermissions === 'Membro' },
                 { label: 'Igrejas', icon: 'pi pi-fw pi-building', routerLink: ['/igrejas'], disabled: this.userPermissions === 'Membro' },
+                { label: 'Dizimistas', icon: 'pi pi-fw pi-building', routerLink: ['/dizimistas']},
                 { label: 'Logout', icon: 'pi pi-fw pi-sign-out', command: () => this.logout(), disabled: false }, 
             ]
         },

@@ -5,5 +5,8 @@ export interface LancamentoViewModel {
     dataLancamento: string;
     igrejaId?: string;
     tipo:number;
+    dizimistaId:string;
+    isDizimo:boolean;
+
   }
   

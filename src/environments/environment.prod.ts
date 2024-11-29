@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  baseUrl:'https://147d-186-224-251-156.ngrok-free.app/api'
+  baseUrl:'ec2-3-139-87-142.us-east-2.compute.amazonaws.com:8080/api'
 };
 
 

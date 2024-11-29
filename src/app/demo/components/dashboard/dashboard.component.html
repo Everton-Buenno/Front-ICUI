@@ -78,7 +78,7 @@
             </div>
             <p-table [value]="lancamentos"  (onPage)="onPage($event)" [paginator]="true" [rows]="10" responsiveLayout="scroll">
                 <ng-template pTemplate="header">
-                    <tr>
+                    <tr >
                         <th>ID</th>
                         <th pSortableColumn="descricao">Descrição <p-sortIcon field="descricao"></p-sortIcon></th>
                         <th pSortableColumn="valor">Valor <p-sortIcon field="valor"></p-sortIcon></th>
@@ -86,10 +86,10 @@
                         <th>Ação</th>
                     </tr>
                 </ng-template>
-                <ng-template pTemplate="body" let-lancamento>
-                    <tr>
-                        <td>{{ lancamento.id }}</td>
-                        <td>{{ lancamento.descricao }}</td>
+                <ng-template  pTemplate="body" let-lancamento>
+                    <tr class="lanc-tr" >
+                        <td>{{ lancamento.id | slice:0:5 }}...</td>
+                        <td>{{ lancamento.descricao| slice:0:8 }}...</td>
                         <td [ngClass]="lancamento.tipo === 2 ? 'text-red-500' : 'text-green-500'">
                             R$ {{ lancamento.valor | number: '1.2-2' }}
                           </td>
@@ -98,6 +98,14 @@
                             <p-button mat-icon-button severity="danger" (click)="showDialogDeleteLancamento(lancamento.id)">
                                 <i class="pi pi-trash  text-xl"></i>
                             </p-button>
+
+                            <p-button 
+                            mat-icon-button 
+                            severity="info" 
+                            (click)="showDetalhesDialog(lancamento)">
+                            <i class="pi pi-pencil text-xl"></i>
+                        </p-button>
+
                         </td>
                     </tr>
                 </ng-template>
@@ -126,6 +134,47 @@
             <div *ngIf="form.submitted && (novoLancamento.Valor <= 0)" class="text-red-600">Valor deve ser maior que zero.</div>
         </div>
 
+
+        <div class="flex align-items-center gap-3 mb-3">
+            <label for="dizimista" class="font-semibold w-8rem">É dizimista?</label>
+          
+            <!-- RadioButton para "Sim" -->
+            <p-radioButton
+              name="dizimista"
+              [value]="true"
+              [(ngModel)]="seriaDizimista"
+              label="Sim"
+              inputId="dizimistaSim"
+              (onClick)="verificarDizimista(true)">
+            </p-radioButton>
+          
+            <!-- RadioButton para "Não" -->
+            <p-radioButton
+              name="dizimista"
+              [value]="false"
+              [(ngModel)]="seriaDizimista"
+              label="Não"
+              inputId="dizimistaNao"
+              (onClick)="verificarDizimista(false)">
+            </p-radioButton>
+          </div>
+          
+          <!-- Dropdown exibido apenas se "Sim" for selecionado -->
+          <div *ngIf="seriaDizimista" class="my-3">
+            <label for="dizimistaDropdown" class="font-semibold mr-3 w-8rem">Selecione o dizimista</label>
+            <p-dropdown
+            name="dizimistaDropdown"
+            id="dizimistaDropdown"
+            [options]="dizimistas"
+            [(ngModel)]="novoLancamento.DizimistaId"
+            optionValue="id"
+            optionLabel="nome"
+            [required]="seriaDizimista"
+            placeholder="Selecione um dizimista">
+            </p-dropdown>
+            <div *ngIf="form.submitted && !novoLancamento.DizimistaId && seriaDizimista" class="text-red-600">Selecione um dizimista</div>
+          </div>
+          
         <!-- Data de Lançamento -->
         <div class="flex align-items-center gap-3 mb-3">
             <label for="dataLancamento" class="font-semibold w-8rem">Data</label>
@@ -161,3 +210,34 @@
         <p-button label="Confirmar" severity="danger" (onClick)="excluirLancamento()" />
     </div>
 </p-dialog>
+
+
+
+<p-dialog [(visible)]="detalheLancamentoDialog" [style]="{ width: '500px' }" header="Detalhes do Lançamento" [modal]="true" class="p-fluid">
+    <ng-template pTemplate="content">
+      <div class="field">
+        <h4>Lançamento</h4>
+        <p><strong>Descrição:</strong> {{ selectedDetalheLancamento?.descricao || 'N/A' }}</p>
+        <p><strong>Data do Lançamento:</strong> {{ selectedDetalheLancamento?.dataLancamento | date: 'dd/MM/yyyy' }}</p>
+        <p><strong>Valor:</strong> R$ {{ selectedDetalheLancamento?.valor | number: '1.2-2' }}</p>
+        <p><strong>Tipo:</strong> {{ selectedDetalheLancamento?.tipo === 1 ? 'Entrada' : 'Saída' }}</p>
+        <p><strong>Dízimo:</strong> {{ selectedDetalheLancamento?.isDizimo ? 'Sim' : 'Não' }}</p>
+      </div>
+  
+      <div *ngIf="detalheDizimista" class="field">
+        <h4>Dizimista</h4>
+        <p><strong>Nome:</strong> {{ detalheDizimista?.nome || 'N/A' }}</p>
+        <p><strong>ID:</strong> {{ detalheDizimista?.id }}</p>
+        <p><strong>Igreja ID:</strong> {{ detalheDizimista?.igrejaId }}</p>
+      </div>
+  
+      <div *ngIf="!detalheDizimista && selectedDetalheLancamento?.isDizimo" class="field">
+        <p class="text-red-500"><strong>Erro:</strong> Não foi possível carregar os detalhes do dizimista.</p>
+      </div>
+    </ng-template>
+  
+    <ng-template pTemplate="footer">
+      <button pButton type="button" label="Fechar" (click)="detalheLancamentoDialog = false"></button>
+    </ng-template>
+  </p-dialog>
+  

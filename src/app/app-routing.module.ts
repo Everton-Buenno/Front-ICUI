@@ -15,6 +15,7 @@ import { authGuard } from './demo/components/guards/auth.guard';
           { path: 'lancamentos', loadChildren: () => import('./demo/components/dashboard/dashboard.module').then(m => m.DashboardModule), canActivate: [authGuard] }, 
           { path: 'igrejas', loadChildren: () => import('./demo/components/igreja/igreja.module').then(m => m.IgrejaModule), canActivate: [authGuard] }, 
           { path: 'usuarios', loadChildren: () => import('./demo/components/usuarios/usuario.module').then(m => m.UsuarioModule), canActivate: [authGuard] }, 
+          { path: 'dizimistas', loadChildren: () => import('./demo/components/dizimistas/dizimista.module').then(m => m.DizimistaModule ), canActivate: [authGuard] }, 
         ]
       },
       { path: 'auth', loadChildren: () => import('./demo/components/auth/auth.module').then(m => m.AuthModule) },

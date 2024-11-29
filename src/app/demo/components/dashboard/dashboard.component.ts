@@ -10,9 +10,12 @@ import {  NgxSpinnerService } from 'ngx-spinner';
 import { MessageService } from 'primeng/api';
 import { IgrejaService } from '../igreja/Services/igreja.service';
 import { IgrejaViewModel } from '../igreja/Models/igreja.viewModel';
+import { DizimistaViewModel } from '../dizimistas/Models/dizimista.viewModel';
+import { DizimistaService } from '../dizimistas/Services/dizimista.service';
 
 @Component({
   templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
   
@@ -28,12 +31,17 @@ export class DashboardComponent implements OnInit {
   igrejaId:string = '';
   userPermissions: string = '';
   currentPage: number = 1; 
+  detalheLancamentoDialog:boolean = false;
   dtLancamento:Date = new Date;
   totalRecords:number = 0;
   igrejas:IgrejaViewModel[] = [];
   igreja!:IgrejaViewModel;
 pageSize: number = 10;
+seriaDizimista:boolean = false;
+dizimistas:DizimistaViewModel[] = [];
+detalheDizimista!:DizimistaViewModel;
 selectedDeleteLancamento!:string;
+selectedDetalheLancamento!:LancamentoViewModel;
   novoLancamento: LancamentoInputModel = {
     Descricao: '',
     Valor: 0,
@@ -54,7 +62,8 @@ selectedDeleteLancamento!:string;
     private jwtService:JwtService,
     private spinner:NgxSpinnerService,
     private messageService:MessageService,
-    private igrejaService:IgrejaService
+    private igrejaService:IgrejaService,
+    private dizimistaService:DizimistaService
   ) {
     this.subscription = this.layoutService.configUpdate$
       .pipe(debounceTime(25))
@@ -87,7 +96,6 @@ selectedDeleteLancamento!:string;
             {
               this.igreja = igrejaAtual;
             }
-            console.log(this.igrejas);
           }
         }
       });
@@ -104,22 +112,22 @@ selectedDeleteLancamento!:string;
   }
 
   carregarLancamentos(igrejaId = this.igrejaId) {
-    //this.spinner.show();
+    this.spinner.show();
  
     this.lancamentoService.getLancamento(igrejaId, this.dtLancamento).subscribe({
       next:(response) => {
         console.log(response);
-
         this.lancamentos = response.lancamentos; 
         this.totalRecords = response.totalRecords;
         this.saldoTotal = response.saldoTotal;
         this.entradaTotal = response.entrada;
         this.saidaTotal = response.saida;
+    this.carregarDizimistas(igrejaId)
+
       },error:(err)=>{
-        console.log(err);
       }
       ,complete:() => {
-        //this.spinner.hide();
+        this.spinner.hide();
       }
     });
   }
@@ -129,6 +137,18 @@ selectedDeleteLancamento!:string;
     this.carregarLancamentos(page);
   }
   
+  carregarDizimistas(igrejaId:string)
+  {
+    this.dizimistaService.getDizimistasByIgreja(igrejaId).subscribe({
+      next:(data)=>{
+        if(data)
+        {
+          this.dizimistas = data;
+        }
+      }
+    })
+  }
+
   excluirLancamento() {
     this.spinner.show();
     this.lancamentoService.removerLancamento(this.selectedDeleteLancamento).subscribe( {
@@ -154,9 +174,14 @@ selectedDeleteLancamento!:string;
     });
   }
 
-
+  verificarDizimista(seriaDizimista:boolean)
+  {
+ this.seriaDizimista = seriaDizimista;
+   console.log(this.seriaDizimista);
+  }
 
   salvarLancamento(form: any) {
+
     if (form.valid) {
       this.novoLancamento.IgrejaId = this.igrejaId;
       this.novoLancamento.UsuarioId = this.userId;
@@ -184,5 +209,36 @@ selectedDeleteLancamento!:string;
   {
     this.dialogExcluirLancamento = true;
     this.selectedDeleteLancamento = id;
+  }
+
+  showDetalhesDialog( lancamento:LancamentoViewModel)
+  {
+    this.spinner.show();
+    if(lancamento.isDizimo && lancamento.dizimistaId)
+      {
+        this.dizimistaService.getDizimistaById(lancamento.dizimistaId).subscribe({
+          next:(data)=> {
+            this.detalheDizimista = data;
+          this.selectedDetalheLancamento = lancamento;
+          
+          console.log(this.detalheDizimista);
+          console.log(this.selectedDetalheLancamento);
+    this.detalheLancamentoDialog = true;
+
+
+          },
+          error:() =>{
+            this.messageService.add({ severity: 'error', summary: 'Erro ao buscar dizimista.' });
+          }, 
+          complete:()=>{
+            this.spinner.hide();
+          }
+        })
+        
+      }else{
+          this.selectedDetalheLancamento = lancamento;
+    this.detalheLancamentoDialog = true;
+    this.spinner.hide();
+        }
   }
 }

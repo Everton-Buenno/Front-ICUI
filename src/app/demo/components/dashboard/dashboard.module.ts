@@ -16,6 +16,7 @@ import { CalendarModule } from 'primeng/calendar';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 @NgModule({
     imports: [
@@ -33,7 +34,8 @@ import { ToastModule } from 'primeng/toast';
         DropdownModule,
         CalendarModule,
         NgxSpinnerModule  ,
-        ToastModule
+        ToastModule,
+        RadioButtonModule
         
     ],
     providers:[MessageService],

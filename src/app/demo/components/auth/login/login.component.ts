@@ -68,7 +68,8 @@ export class LoginComponent {
                 }
             },
             error: (err) => {
-
+                console.log(err);
+                console.log(err.error)
                 this.loading = false;
                 const errorMessage = err?.error?.mensagem || 'Erro desconhecido ao autenticar';
                 this.messageService.add({

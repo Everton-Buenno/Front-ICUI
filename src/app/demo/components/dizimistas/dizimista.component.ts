@@ -45,6 +45,7 @@ export class DizimistaComponent implements OnInit {
 
         this.cols = [
             { field: 'nome', header: 'Nome' },
+            { field: 'Ações', header: 'Ações' },
         ];
 
 

@@ -18,7 +18,8 @@ export class DizimistaComponent implements OnInit {
 
     deleteDizimistaDialog: boolean = false;
     dizimistaEditDialog:boolean = false;
-
+    dizimistaDetalhesDialog:boolean = false;
+    dizimistaInfo!:DizimistaViewModel;
     //deleteDizimistaDialog: boolean = false;
 
     dizimistas: DizimistaViewModel[] = [];
@@ -207,6 +208,17 @@ this.dizimista.IgrejaId = this.igrejaId;
     onGlobalFilter(table: Table, event: Event) {
         table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
     }
+
+
+    showDizimistaInfo(dizimista:DizimistaViewModel)
+    {
+        console.log(dizimista);
+        this.dizimistaInfo = dizimista;
+        setTimeout(() =>{
+            this.dizimistaDetalhesDialog = true;
+        },200)
+    }
+
 
     estados = [
         { sigla: 'AC', nome: 'Acre' },

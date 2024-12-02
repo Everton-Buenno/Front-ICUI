@@ -17,6 +17,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 
 @NgModule({
     imports: [
@@ -35,10 +36,11 @@ import { RadioButtonModule } from 'primeng/radiobutton';
         CalendarModule,
         NgxSpinnerModule  ,
         ToastModule,
-        RadioButtonModule
-        
+        RadioButtonModule,
+        NgxMaskDirective,
+         NgxMaskPipe,
     ],
-    providers:[MessageService],
+    providers:[MessageService, provideNgxMask()],
     declarations: [DashboardComponent]
 })
 export class DashboardModule { }

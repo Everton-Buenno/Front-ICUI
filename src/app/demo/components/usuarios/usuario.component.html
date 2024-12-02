@@ -100,7 +100,8 @@
                 id="senha" 
                 pInputText 
                 [(ngModel)]="usuario.Senha" 
-                name="senha" 
+                name="senha"
+                 
                 #senha="ngModel" 
                 required />
             <small *ngIf="senha.touched && senha.invalid" class="p-error">A senha é obrigatória.</small>

@@ -1,8 +1,9 @@
 {
     "/api": {
-      "target": "https://3.139.87.142:8081",
-      "secure": false,
-      "changeOrigin": true
+    "target": "https://3.139.87.142",
+    "secure": false,
+    "changeOrigin": true
     }
+        
   }
   

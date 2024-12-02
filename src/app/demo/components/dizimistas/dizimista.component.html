@@ -4,9 +4,20 @@
     <div class="col-12">
         <div class="card p-1 ">
             <p-toast></p-toast>
-            <p-toolbar styleClass="mb-4">
-                <ng-template pTemplate="left">
+            <p-toolbar class="w-full" styleClass="mb-4 ">
+                <ng-template  pTemplate="left">
+                    <div class="  flex flex-column  ">
+
                     <button pButton pRipple label="Novo Dizimista" icon="pi pi-plus" class="p-button-contrast mr-2" (click)="openNew()"></button>
+
+                    <p-dropdown class="mt-3" *ngIf="userPermissions === 'Administrador'"
+                    [options]="igrejas" 
+                    [(ngModel)]="igreja" 
+                    optionLabel="nome" 
+                    (onChange)="obterDizimistas(igreja.id)"
+                    placeholder="Selecione a igreja" />
+                </div>
+
                 </ng-template>
             </p-toolbar>
 

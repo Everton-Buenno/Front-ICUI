@@ -7,6 +7,8 @@ import { DizimistaInputModel } from './Models/dizimista.inputModel';
 import { DizimistaViewModel } from './Models/dizimista.viewModel';
 import { DizimistaService } from './Services/dizimista.service';
 import { JwtService } from '../../shared/jwt-service.service';
+import { IgrejaService } from '../igreja/Services/igreja.service';
+import { IgrejaViewModel } from '../igreja/Models/igreja.viewModel';
 
 @Component({
     templateUrl: './dizimista.component.html',
@@ -21,7 +23,7 @@ export class DizimistaComponent implements OnInit {
     dizimistaDetalhesDialog:boolean = false;
     dizimistaInfo!:DizimistaViewModel;
     //deleteDizimistaDialog: boolean = false;
-
+    igrejas:IgrejaViewModel[] = [];
     dizimistas: DizimistaViewModel[] = [];
 
     dizimista: DizimistaInputModel = { Nome: '', IgrejaId: ''};
@@ -32,12 +34,26 @@ export class DizimistaComponent implements OnInit {
     submitted: boolean = false;
     idSelectedDeleteDizimista!:string;
     cols: any[] = [];
+    igreja!:IgrejaViewModel;
+
+    userPermissions: string = '';
 
     rowsPerPageOptions = [5, 10, 20];
 
-    constructor(private dizimistaService: DizimistaService, private messageService: MessageService,private cdr: ChangeDetectorRef,  private spinner:NgxSpinnerService, private jwtService:JwtService) { 
+    constructor(private dizimistaService: DizimistaService, 
+        private messageService: MessageService,
+        private cdr: ChangeDetectorRef, 
+         private spinner:NgxSpinnerService, 
+         private jwtService:JwtService,
+         private igrejaService:IgrejaService
+        ) { 
+            const token = localStorage.getItem('jwt'); 
+
+            if (token) {
+                this.igrejaId = this.jwtService.getIgrejaId(token);
+                this.userPermissions = this.jwtService.getUserRole(token);
         
-       
+            }
     }
 
     ngOnInit() {
@@ -49,13 +65,44 @@ export class DizimistaComponent implements OnInit {
         ];
 
 
-        const token = localStorage.getItem('jwt'); 
-
-    if (token) {
-        this.igrejaId = this.jwtService.getIgrejaId(token);
-    }
+  
         this.obterDizimistas();
+
+
+        if(this.userPermissions === 'Administrador')
+            {
+              this.igrejaService.getIgrejas().subscribe({
+                next:(data)=> {
+                  if(data){
+                    this.igrejas = data;
+                    const igrejaAtual = this.igrejas.find((igr)=> {
+                      return igr.id === this.igrejaId
+                    })
+        
+                    if(igrejaAtual.id === this.igrejaId)
+                    {
+                      this.igreja = igrejaAtual;
+                    }
+                  }
+                }
+              });
+            }else{
+              this.igrejaService.getIgrejaById(this.igrejaId).subscribe({
+                next:(data) =>{
+                  if(data){
+                    this.igreja === data;
+                  }
+                }
+                
+              })
+            }
+
+
     }
+
+
+
+    
 
     openNew() {
         this.dizimista = { Nome: '', IgrejaId: '' };
@@ -66,11 +113,11 @@ export class DizimistaComponent implements OnInit {
     deleteSelectedDizimista() {
         this.deleteDizimistaDialog = true;
     }
-obterDizimistas()
+obterDizimistas(igrejaId:string = this.igrejaId)
 {
 
     this.spinner.show();
-    this.dizimistaService.getDizimistasByIgreja(this.igrejaId).subscribe({
+    this.dizimistaService.getDizimistasByIgreja(igrejaId).subscribe({
         next:(data) =>{
             if(data)
             {
@@ -219,36 +266,4 @@ this.dizimista.IgrejaId = this.igrejaId;
             this.dizimistaDetalhesDialog = true;
         },200)
     }
-
-
-    estados = [
-        { sigla: 'AC', nome: 'Acre' },
-        { sigla: 'AL', nome: 'Alagoas' },
-        { sigla: 'AP', nome: 'Amapá' },
-        { sigla: 'AM', nome: 'Amazonas' },
-        { sigla: 'BA', nome: 'Bahia' },
-        { sigla: 'CE', nome: 'Ceará' },
-        { sigla: 'DF', nome: 'Distrito Federal' },
-        { sigla: 'ES', nome: 'Espírito Santo' },
-        { sigla: 'GO', nome: 'Goiás' },
-        { sigla: 'MA', nome: 'Maranhão' },
-        { sigla: 'MT', nome: 'Mato Grosso' },
-        { sigla: 'MS', nome: 'Mato Grosso do Sul' },
-        { sigla: 'MG', nome: 'Minas Gerais' },
-        { sigla: 'PA', nome: 'Pará' },
-        { sigla: 'PB', nome: 'Paraíba' },
-        { sigla: 'PR', nome: 'Paraná' },
-        { sigla: 'PE', nome: 'Pernambuco' },
-        { sigla: 'PI', nome: 'Piauí' },
-        { sigla: 'RJ', nome: 'Rio de Janeiro' },
-        { sigla: 'RN', nome: 'Rio Grande do Norte' },
-        { sigla: 'RS', nome: 'Rio Grande do Sul' },
-        { sigla: 'RO', nome: 'Rondônia' },
-        { sigla: 'RR', nome: 'Roraima' },
-        { sigla: 'SC', nome: 'Santa Catarina' },
-        { sigla: 'SP', nome: 'São Paulo' },
-        { sigla: 'SE', nome: 'Sergipe' },
-        { sigla: 'TO', nome: 'Tocantins' }
-    ];
-    
 }
